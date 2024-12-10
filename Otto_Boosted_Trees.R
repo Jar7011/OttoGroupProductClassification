@@ -18,7 +18,7 @@ train <- train %>%
 # test_small <- test %>% sample_n(300)
 
 # Create recipe
-boost_recipe <- recipe(target ~ ., data = train_small) %>% 
+boost_recipe <- recipe(target ~ ., data = train) %>% 
   step_normalize(all_numeric_predictors())
 
 # Create model 
@@ -37,7 +37,7 @@ boost_wf <- workflow() %>%
 tuning_grid <- grid_regular(tree_depth(), learn_rate = 0.1, levels = 5)
 
 # Split data for CV
-folds <- vfold_cv(train_small, v = 10, repeats = 1)
+folds <- vfold_cv(train, v = 10, repeats = 1)
 
 # Run the CV
 cv_results <- boost_wf %>% 
@@ -52,11 +52,11 @@ best_tuning_params <- cv_results %>%
 # Finalize workflow
 final_wf <- boost_wf %>% 
   finalize_workflow(best_tuning_params) %>% 
-  fit(data = train_small)
+  fit(data = train)
 
 # Predict and format for submission
-boost_preds <- predict(final_wf, new_data = test_small, type = "prob") %>% 
-  bind_cols(., test_small) %>% 
+boost_preds <- predict(final_wf, new_data = test, type = "prob") %>% 
+  bind_cols(., test) %>% 
   select(id, everything())
 
 colnames(boost_preds) <- gsub('.pred_', '', colnames(boost_preds))
