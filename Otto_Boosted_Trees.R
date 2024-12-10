@@ -24,7 +24,7 @@ boost_recipe <- recipe(target ~ ., data = train) %>%
 # Create model 
 boost_model <- boost_tree(tree_depth = tune(),
                           trees = 1000,
-                          learn_rate = tune()) %>% 
+                          learn_rate = 0.1) %>% 
   set_engine('lightgbm') %>% 
   set_mode('classification')
 
@@ -34,7 +34,7 @@ boost_wf <- workflow() %>%
   add_model(boost_model)
 
 # Grid of values to tune over
-tuning_grid <- grid_regular(tree_depth(), learn_rate = 0.1, levels = 5)
+tuning_grid <- grid_regular(tree_depth(), levels = 5)
 
 # Split data for CV
 folds <- vfold_cv(train, v = 10, repeats = 1)
