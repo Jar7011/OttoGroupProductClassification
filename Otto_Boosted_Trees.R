@@ -19,6 +19,7 @@ train <- train %>%
 
 # Create recipe
 boost_recipe <- recipe(target ~ ., data = train) %>% 
+  step_rm(id) %>% 
   step_normalize(all_numeric_predictors())
 
 # Create model 
@@ -60,6 +61,9 @@ boost_preds <- predict(final_wf, new_data = test, type = "prob") %>%
   select(id, everything())
 
 colnames(boost_preds) <- gsub('.pred_', '', colnames(boost_preds))
+
+boost_preds <- boost_preds %>%
+  select(id, starts_with("Class_"))
 
 # Write out file
 vroom_write(x = boost_preds, file = "submission.csv", delim = ",")
