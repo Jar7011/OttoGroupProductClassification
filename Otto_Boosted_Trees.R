@@ -1,3 +1,4 @@
+# Load necessary libraries
 library(tidyverse)
 library(tidymodels)
 library(vroom)
@@ -9,13 +10,20 @@ library(bonsai)
 train <- vroom('train.csv')
 test <- vroom('test.csv')
 
+# Get glimpse of data
+glimpse(train)
+
+# See distribution of the target classes
+ggplot(train, aes(x = target)) +
+  geom_bar() +
+  labs(title = "Target Classes", 
+       x = "Class", 
+       y = "Count") +
+  theme_minimal()
+
 # Make target a factor
 train <- train %>% 
   mutate(target = as.factor(target))
-
-# # Make small training and testing set
-# train_small <- train %>% sample_n(1000)
-# test_small <- test %>% sample_n(300)
 
 # Create recipe
 boost_recipe <- recipe(target ~ ., data = train) %>% 
